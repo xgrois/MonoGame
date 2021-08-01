@@ -50,7 +50,7 @@ namespace ConsoleAppWithMonoGame
 
             SimpleLineShapes.DrawLine(
                 spriteBatch: _spriteBatch, 
-                begin: new Vector2(100, 100), 
+                begin: new Vector2(100, 400), 
                 end: new Vector2(100,200), 
                 color: Color.White,
                 thinkness: 10f);
@@ -69,6 +69,14 @@ namespace ConsoleAppWithMonoGame
                 color: Color.Green, 
                 samples: 20, 
                 thinkness: 2);
+
+            SimpleLineShapes.DrawLineConvexRegularPolygon(
+                spriteBatch: _spriteBatch,
+                sides: 3,
+                center: new Vector2(600, 100),
+                circumradius: 60f,
+                color: Color.Yellow,
+                thinkness: 1f);
 
             SimpleLineShapes.DrawLineConvexRegularPolygon(
                 spriteBatch: _spriteBatch, 
