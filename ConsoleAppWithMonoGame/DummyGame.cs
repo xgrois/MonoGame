@@ -44,7 +44,7 @@ namespace ConsoleAppWithMonoGame
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             _rotationAngle = (_rotationAngle + _rotationalSpeed * dt) % MathHelper.TwoPi;
-            System.Console.WriteLine(_rotationAngle);
+
             base.Update(gameTime);
         }
 
