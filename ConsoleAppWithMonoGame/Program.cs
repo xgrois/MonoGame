@@ -4,16 +4,13 @@ namespace ConsoleAppWithMonoGame
 {
     class Program
     {
+        [STAThread]
         static void Main(string[] args)
         {
-
-
-            
-
-            DummyGame game = new DummyGame();
-            
-
-            game.Run();
+            using (DummyGame game = new DummyGame())
+            {
+                game.Run();
+            }
         }
     }
 }

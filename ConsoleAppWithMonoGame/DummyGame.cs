@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace ConsoleAppWithMonoGame
 {
@@ -43,7 +44,11 @@ namespace ConsoleAppWithMonoGame
         protected override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            _rotationAngle = (_rotationAngle + _rotationalSpeed * dt) % MathHelper.TwoPi;
+
+            var kstate = Keyboard.GetState();
+
+            if (kstate.IsKeyDown(Keys.R))
+                _rotationAngle = (_rotationAngle + _rotationalSpeed * dt) % MathHelper.TwoPi;
 
             base.Update(gameTime);
         }
