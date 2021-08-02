@@ -9,6 +9,9 @@ namespace ConsoleAppWithMonoGame
         #region Fields
         GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
+
+        private float _rotationalSpeed = MathHelper.Pi; // rad/s
+        private float _rotationAngle = 0f; // rads
         #endregion
 
         #region Properties
@@ -39,6 +42,9 @@ namespace ConsoleAppWithMonoGame
 
         protected override void Update(GameTime gameTime)
         {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _rotationAngle = (_rotationAngle + _rotationalSpeed * dt) % MathHelper.TwoPi;
+            System.Console.WriteLine(_rotationAngle);
             base.Update(gameTime);
         }
 
@@ -62,13 +68,21 @@ namespace ConsoleAppWithMonoGame
                 color: Color.Red,
                 thinkness: 2f);
 
-            SimpleLineShapes.DrawCircunference(
+            SimpleLineShapes.DrawLineCircle(
                 spriteBatch: _spriteBatch, 
-                center: new Vector2(200, 200), 
+                centerPosition: new Vector2(200, 200), 
                 radius: 50f, 
                 color: Color.Green, 
                 samples: 20, 
                 thinkness: 2);
+
+            SimpleLineShapes.DrawLineCircle(
+                spriteBatch: _spriteBatch,
+                centerPosition: new Vector2(200, 200),
+                radius: 50f,
+                color: Color.Blue,
+                samples: 5,
+                thinkness: 1);
 
             SimpleLineShapes.DrawLineConvexRegularPolygon(
                 spriteBatch: _spriteBatch,
@@ -84,6 +98,28 @@ namespace ConsoleAppWithMonoGame
                 center: new Vector2(500, 200), 
                 circumradius: 30f, 
                 color: Color.Violet, 
+                thinkness: 2f);
+
+            Vector2[] vertices = new Vector2[] { new Vector2(0f, -10f), new Vector2(-10f, 10f), new Vector2(-5f, 5f), new Vector2(5f, 5f), new Vector2(10f, 10f) };
+            SimpleLineShapes.DrawLineCustomPolygon(
+                spriteBatch: _spriteBatch,
+                vertexSequence: vertices,
+                transform: Matrix.CreateTranslation(50f, 50f, 0f),
+                color: Color.White,
+                thinkness: 2f);
+
+            SimpleLineShapes.DrawLineCustomPolygon(
+                spriteBatch: _spriteBatch,
+                vertexSequence: vertices,
+                transform: Matrix.CreateRotationZ(MathHelper.PiOver2) * Matrix.CreateTranslation(100f, 100f, 0f),
+                color: Color.White,
+                thinkness: 2f);
+
+            SimpleLineShapes.DrawLineCustomPolygon(
+                spriteBatch: _spriteBatch,
+                vertexSequence: vertices,
+                transform: Matrix.CreateScale(2f) * Matrix.CreateRotationZ(_rotationAngle) * Matrix.CreateTranslation(200f, 200f, 0f),
+                color: Color.White,
                 thinkness: 2f);
 
             _spriteBatch.End();

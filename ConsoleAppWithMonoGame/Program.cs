@@ -6,6 +6,10 @@ namespace ConsoleAppWithMonoGame
     {
         static void Main(string[] args)
         {
+
+
+            
+
             DummyGame game = new DummyGame();
             
 

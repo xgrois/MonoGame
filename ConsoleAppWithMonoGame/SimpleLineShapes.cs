@@ -10,7 +10,7 @@ namespace ConsoleAppWithMonoGame
 {
     public static class SimpleLineShapes
     {
-
+        private const float EPSILON = 0.000_000_1f;
 
         public static void DrawLine(SpriteBatch spriteBatch, Vector2 begin, Vector2 end, Color color, float thinkness = 2f)
         {
@@ -26,8 +26,6 @@ namespace ConsoleAppWithMonoGame
                 effects: SpriteEffects.None,
                 layerDepth: 0f
                 );
-
-
         }
 
         public static void DrawLine(SpriteBatch spriteBatch, Vector2 begin, float length, float rotation, Color color, float thinkness = 2f)
@@ -43,8 +41,6 @@ namespace ConsoleAppWithMonoGame
                 effects: SpriteEffects.None,
                 layerDepth: 0f
                 );
-
-
         }
 
         public static void DrawLineRectangle(SpriteBatch spriteBatch, Vector2 position, Vector2 size, Color color, float thinkness = 2f)
@@ -77,33 +73,53 @@ namespace ConsoleAppWithMonoGame
 
         }
 
-        public static void DrawLineConvexRegularPolygon(SpriteBatch spriteBatch, int sides, Vector2 center, float circumradius, Color color, float thinkness = 2f)
-        {
-            DrawCircunference(spriteBatch, center, circumradius, color, sides, thinkness);
-        }
-
-        public static void DrawCircunference(SpriteBatch spriteBatch, Vector2 center, float radius, Color color, int samples = 20, float thinkness = 2f)
+        public static void DrawLineCircle(SpriteBatch spriteBatch, Vector2 centerPosition, float radius, Color color, int samples = 20, float thinkness = 2f)
         {
             if (samples <= 2) throw new Exception("Circunference needs at least 3 sample points.");
 
-            double alpha = (2 * Math.PI) / samples;
+            float alpha = (2 * MathF.PI) / samples;
 
-            // For rotation, we translate the center of the circunference to the 0,0
+            // For rotation, we translate the center of the circunference to the 0,0 (top-left)
             // Once rotated, we add the center
-            Vector2 v1 = new Vector2(radius, 0);
-            Vector2 v2 = v1.Rotate(alpha);
 
-            DrawLine(spriteBatch, v1 + center, v2 + center, color, thinkness);
-
-            for (int i = 0; i < samples - 1; i++)
+            // Our first point is x = 0, y = radius in normal coordinates.
+            // In MG, y-coord is reversed (- is up).
+            Vector2 v1 = new Vector2(0, -radius);
+            Vector2 v2;
+            for (int i = 0; i < samples; i++)
             {
-                v1 = v2;
                 v2 = v1.Rotate(alpha);
-
-                DrawLine(spriteBatch, v1 + center, v2 + center, color, thinkness);
+                DrawLine(spriteBatch, v1 + centerPosition, v2 + centerPosition, color, thinkness);
+                v1 = v2;
             }
+        }
+
+        public static void DrawLineConvexRegularPolygon(SpriteBatch spriteBatch, int sides, Vector2 center, float circumradius, Color color, float thinkness = 2f)
+        {
+            DrawLineCircle(spriteBatch, center, circumradius, color, sides, thinkness);
+        }
 
 
+        /// <summary>
+        /// Draw a custom polygon given the sequence of vertices in MG coordinate system.
+        /// Applies to the given vertices the given transformation matrix. This is useful
+        /// for rotate the polygon, translate it to a position, scale it...
+        /// </summary>
+        /// <param name="spriteBatch"></param>
+        /// <param name="vertexSequence"></param>
+        /// <param name="transform"></param>
+        /// <param name="color"></param>
+        /// <param name="thinkness"></param>
+        public static void DrawLineCustomPolygon(SpriteBatch spriteBatch, Vector2[] vertexSequence, Matrix transform, Color color, float thinkness = 2f)
+        {
+            Vector2 v1;
+            Vector2 v2;
+            for (int i = 0; i < vertexSequence.Length; i++)
+            {
+                v1 = vertexSequence[i];
+                v2 = vertexSequence[(i + 1) % vertexSequence.Length];
+                DrawLine(spriteBatch, Vector2.Transform(v1, transform), Vector2.Transform(v2, transform), color, thinkness);
+            }
         }
 
         /// <summary>
@@ -113,15 +129,22 @@ namespace ConsoleAppWithMonoGame
         /// <param name="vector"></param>
         /// <param name="alpha"></param>
         /// <returns></returns>
-        public static Vector2 Rotate(this Vector2 vector, double alpha)
+        public static Vector2 Rotate(this Vector2 vector, float alpha)
         {
             // counterclockwise rotation
-            return new Vector2( (float)(vector.X * Math.Cos(alpha) - vector.Y * Math.Sin(alpha)), (float)(vector.X * Math.Sin(alpha) + vector.Y * Math.Cos(alpha)) );
+            float x = vector.X * MathF.Cos(alpha) - vector.Y * MathF.Sin(alpha);
+            float y = vector.X * MathF.Sin(alpha) + vector.Y * MathF.Cos(alpha);
+            return new Vector2( IsAlmostZero(x) ? 0f : x, IsAlmostZero(y) ? 0f : y);
         }
 
         public static float ToAngle(this Vector2 vector)
         {
             return (float)Math.Atan2(vector.Y, vector.X);
+        }
+
+        private static bool IsAlmostZero(float x)
+        {
+            return (-EPSILON <= x) && (x <= EPSILON);
         }
 
     }
