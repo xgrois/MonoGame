@@ -24,9 +24,8 @@ namespace MonoGameWithPhysics
 
         public Vector2 BodySize { get; set; }
 
-        public FixedPlatform(World world, Vector2 position, Vector2 bodySize, string tag, float density = 1f)
+        public FixedPlatform(World world, Vector2 position, Vector2 bodySize, float density = 1f)
         {
-            Tag = tag;
 
             BodySize = bodySize;
             Body = world.CreateBody(position: position, rotation: 0f, bodyType: BodyType);

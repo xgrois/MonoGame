@@ -78,7 +78,7 @@ namespace MonoGameWithPhysics
             _world = new World();
 
             /* Player */
-            _player = new DynamicCircle(world: _world, position: new Vector2(0, _playerBodyRadius + 1f), radius: _playerBodyRadius, tag: "player", density: 1f);
+            _player = new DynamicCircle(world: _world, position: new Vector2(0, _playerBodyRadius + 1f), radius: _playerBodyRadius, density: 1f);
 
             /* Circles */
             _balls = new List<DynamicCircle>();
@@ -87,9 +87,9 @@ namespace MonoGameWithPhysics
 
             _platforms = new List<FixedPlatform>()
             {
-                new FixedPlatform(world: _world, position: new Vector2(-10f, -10f), bodySize: _platformBodySize, tag: "platform", density: 1f),
-                new FixedPlatform(world: _world, position: new Vector2(0f, 0f), bodySize: _platformBodySize, tag: "platform", density: 1f),
-                new FixedPlatform(world: _world, position: new Vector2(10f, -10f), bodySize: _platformBodySize, tag: "platform", density: 1f),
+                new FixedPlatform(world: _world, position: new Vector2(-10f, -10f), bodySize: _platformBodySize, density: 1f),
+                new FixedPlatform(world: _world, position: new Vector2(0f, 0f), bodySize: _platformBodySize, density: 1f),
+                new FixedPlatform(world: _world, position: new Vector2(10f, -10f), bodySize: _platformBodySize, density: 1f),
             };
 
             base.Initialize();
@@ -108,7 +108,7 @@ namespace MonoGameWithPhysics
 
             /* Player */
             _player.Load(Content, _relPathSpritePlayer);
-            _player.Body.FixtureList[0].Tag = "player";
+            _player.Body.FixtureList[0].Tag = "player"; // This tag is to identify the object in a collision
 
             /* Platforms */
             foreach (var platform in _platforms)
@@ -243,7 +243,7 @@ namespace MonoGameWithPhysics
             if ((mouseState.LeftButton == ButtonState.Pressed) && (_oldMouseState.LeftButton == ButtonState.Released))
             {
                 Vector2 worldMousePosition = GetMousePositionInWorld(mouseState.X, mouseState.Y, GraphicsDevice.Viewport, _cameraViewWidth, _cameraPosition);
-                DynamicCircle ball = new DynamicCircle(world: _world, position: worldMousePosition, radius: 0.5f, tag: "ball", restitution: 0.5f, friction: 0.5f, density: 1f);
+                DynamicCircle ball = new DynamicCircle(world: _world, position: worldMousePosition, radius: 0.5f, restitution: 0.5f, friction: 0.5f, density: 1f);
                 ball.Load(Content, _relPathSpriteBall);
                 ball.Body.FixtureList[0].Tag = "ball";
                 ball.Body.OnCollision += BodyBall_OnCollision;

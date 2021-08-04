@@ -38,9 +38,8 @@ namespace MonoGameWithPhysics
             }
         }
 
-        public DynamicCircle(World world, Vector2 position, float radius, string tag, float restitution = 0.8f, float friction = 0.5f, float density = 1f)
+        public DynamicCircle(World world, Vector2 position, float radius, float restitution = 0.8f, float friction = 0.5f, float density = 1f)
         {
-            Tag = tag;
 
             Body = world.CreateBody(position: position, rotation: 0f, bodyType: BodyType);
 

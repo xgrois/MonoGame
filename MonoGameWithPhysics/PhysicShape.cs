@@ -36,8 +36,6 @@ namespace MonoGameWithPhysics
 
         public Color Color { get; set; } = Color.White;
 
-        public string Tag { get; set; }
-
         #endregion
 
         #region Physics
