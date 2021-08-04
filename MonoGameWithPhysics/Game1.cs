@@ -26,7 +26,7 @@ namespace MonoGameWithPhysics
         private SoundEffect _hitSoundPlayerToPlatform;
         private SoundEffect _hitSoundPlayerToBall;
         private SoundEffect _hitSoundBallToBall;
-        private SoundEffect _hitSoundBallToPlatform; // reuse
+        private SoundEffect _hitSoundBallToPlatform; // reuse _hitSoundPlayerToPlatform and change pitch
 
         // Inputs
         private GamePadState _oldPadState;
@@ -120,7 +120,6 @@ namespace MonoGameWithPhysics
             /* Sound effects */
             _hitSoundPlayerToPlatform = Content.Load<SoundEffect>("SoundEffects/player-hits-platform");
             _hitSoundPlayerToBall = Content.Load<SoundEffect>("SoundEffects/player-hits-ball");
-
             _hitSoundBallToBall = Content.Load<SoundEffect>("SoundEffects/ball-hits-ball");
 
             _player.Body.OnCollision += BodyPlayer_OnCollision;
@@ -312,10 +311,10 @@ namespace MonoGameWithPhysics
                 platform.Draw(_spriteBatch);
             }
             
-            /* Draw cicles */
-            foreach (var circle in _balls)
+            /* Draw balls */
+            foreach (var ball in _balls)
             {
-                circle.Draw(_spriteBatch);
+                ball.Draw(_spriteBatch);
             }
 
             _spriteBatch.End();
