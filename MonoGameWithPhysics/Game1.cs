@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Collections.Generic;
 using System;
 using Microsoft.Xna.Framework.Audio;
+using tainicom.Aether.Physics2D.Dynamics.Joints;
 
 namespace MonoGameWithPhysics
 {
@@ -37,21 +38,28 @@ namespace MonoGameWithPhysics
         private Vector3 _cameraPosition = new Vector3(0f, -1.7f, 0f); // camera is 1.7 meters below the ground
         float _cameraViewWidth = 30f; // camera is 12.5 meters wide.
 
-        // Physics
+        /* Physics */
+        // Physics Entities
         private World _world;
         private List<DynamicCircle> _balls;
         private List<FixedPlatform> _platforms;
         private DynamicCircle _player;
 
+        // Physics Entities Parameters
         private float _playerBodyRadius = 1.5f / 2f; // player diameter is 1.5 meters
         private Vector2 _platformBodySize = new Vector2(8f, 1f); // ground is 8x1 meters
+
+        // Physic Joints
+        protected FixedMouseJoint _fixedMouseJoint;
+
 
 
 #if !JOYSTICK
         const string Text = "Press A or D to rotate the ball\n" +
                             "Press Space to jump\n" +
                             "Use arrow keys to move the camera\n" +
-                            "Left mouse click to throw a new ball";
+                            "Left mouse click to throw a new ball\n" +
+                            "Right mouse click in a ball to throw it";
 #else
                 const string Text = "Use left stick to move\n" +
                                     "Press A to jump\n" +
@@ -237,11 +245,11 @@ namespace MonoGameWithPhysics
         private void HandleMouse(GameTime gameTime)
         {
             MouseState mouseState = Mouse.GetState();
+            Vector2 worldMousePosition = GetMousePositionInWorld(mouseState.X, mouseState.Y, GraphicsDevice.Viewport, _cameraViewWidth, _cameraPosition);
 
             // Create new dynamic circles
             if ((mouseState.LeftButton == ButtonState.Pressed) && (_oldMouseState.LeftButton == ButtonState.Released))
             {
-                Vector2 worldMousePosition = GetMousePositionInWorld(mouseState.X, mouseState.Y, GraphicsDevice.Viewport, _cameraViewWidth, _cameraPosition);
                 DynamicCircle ball = new DynamicCircle(world: _world, position: worldMousePosition, radius: 0.5f, restitution: 0.5f, friction: 0.5f, density: 1f);
                 ball.Load(Content, _relPathSpriteBall);
                 ball.Body.FixtureList[0].Tag = "ball";
@@ -249,10 +257,45 @@ namespace MonoGameWithPhysics
                 _balls.Add(ball);
             }
 
+            // Handle the movement of a physic entity with the mouse via a joint
+            HandleFixedMouseJoint(mouseState, worldMousePosition);
+
+
             _oldMouseState = mouseState;
         }
 
+        /// <summary>
+        /// This method shows some basic "angry birds" functionality. You can right click on a ball 
+        /// to throw it away
+        /// </summary>
+        /// <param name="mouseState"></param>
+        /// <param name="worldMousePosition"></param>
+        private void HandleFixedMouseJoint(MouseState mouseState, Vector2 worldMousePosition)
+        {
 
+            if ((mouseState.RightButton == ButtonState.Pressed) && (_oldMouseState.RightButton == ButtonState.Released) && (_fixedMouseJoint == null))
+            {
+                Fixture savedFixture = _world.TestPoint(worldMousePosition);
+                if (savedFixture != null)
+                {
+                    Body body = savedFixture.Body;
+                    _fixedMouseJoint = new FixedMouseJoint(body, worldMousePosition);
+                    _fixedMouseJoint.MaxForce = 50.0f * body.Mass;
+                    _world.Add(_fixedMouseJoint);
+                    body.Awake = true;
+                }
+            }
+
+            if ((mouseState.RightButton == ButtonState.Released) && (_oldMouseState.RightButton == ButtonState.Pressed) && (_fixedMouseJoint != null))
+            {
+                _world.Remove(_fixedMouseJoint);
+                _fixedMouseJoint = null;
+            }
+
+            if (_fixedMouseJoint != null)
+                _fixedMouseJoint.WorldAnchorB = worldMousePosition;
+
+        }
 
         /// <summary>
         /// Converts mouse position in MG coordinate system to physics world coordinates and camera setup
