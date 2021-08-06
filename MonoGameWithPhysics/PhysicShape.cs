@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Content;
 
 namespace MonoGameWithPhysics
 {
+
     public abstract class PhysicShape
     {
         #region Textures
@@ -40,10 +41,7 @@ namespace MonoGameWithPhysics
 
         #region Physics
 
-
-
         public Body Body { get; set; }
-
 
         #endregion
 

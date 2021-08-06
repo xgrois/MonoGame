@@ -22,6 +22,7 @@ namespace MonoGameWithPhysics
         private string _relPathSpriteBall = "Sprites/ball";
         private string _relPathSpritePlayer = "Sprites/player";
         private string _relPathSpritePlatform = "Sprites/platform";
+        private Texture2D _launcherConnectionTexture;
 
         // Sounds
         private SoundEffect _hitSoundPlayerToPlatform;
@@ -41,9 +42,11 @@ namespace MonoGameWithPhysics
         /* Physics */
         // Physics Entities
         private World _world;
-        private List<DynamicCircle> _balls;
-        private List<FixedPlatform> _platforms;
-        private DynamicCircle _player;
+        private List<CircleEntity> _balls;
+        private List<RectangleEntity> _platforms;
+        private CircleEntity _player;
+        private CircleEntity _laucherFixed;
+        private CircleEntity _laucherDynamic;
 
         // Physics Entities Parameters
         private float _playerBodyRadius = 1.5f / 2f; // player diameter is 1.5 meters
@@ -51,7 +54,6 @@ namespace MonoGameWithPhysics
 
         // Physic Joints
         protected FixedMouseJoint _fixedMouseJoint;
-
 
 
 #if !JOYSTICK
@@ -86,18 +88,18 @@ namespace MonoGameWithPhysics
             _world = new World();
 
             /* Player */
-            _player = new DynamicCircle(world: _world, position: new Vector2(0, _playerBodyRadius + 1f), radius: _playerBodyRadius, density: 1f);
+            _player = new CircleEntity(world: _world, position: new Vector2(0, _playerBodyRadius + 1f), radius: _playerBodyRadius, bodyType: BodyType.Dynamic, density: 1f);
 
             /* Circles */
-            _balls = new List<DynamicCircle>();
+            _balls = new List<CircleEntity>();
 
             /* Platforms */
 
-            _platforms = new List<FixedPlatform>()
+            _platforms = new List<RectangleEntity>()
             {
-                new FixedPlatform(world: _world, position: new Vector2(-10f, -10f), bodySize: _platformBodySize, density: 1f),
-                new FixedPlatform(world: _world, position: new Vector2(0f, 0f), bodySize: _platformBodySize, density: 1f),
-                new FixedPlatform(world: _world, position: new Vector2(10f, -10f), bodySize: _platformBodySize, density: 1f),
+                new RectangleEntity(world: _world, position: new Vector2(-10f, -10f), bodySize: _platformBodySize, bodyType: BodyType.Static, density: 1f),
+                new RectangleEntity(world: _world, position: new Vector2(0f, 0f), bodySize: _platformBodySize, bodyType: BodyType.Static, density: 1f),
+                new RectangleEntity(world: _world, position: new Vector2(10f, -10f), bodySize: _platformBodySize, bodyType: BodyType.Static, density: 1f),
             };
 
             base.Initialize();
@@ -250,7 +252,7 @@ namespace MonoGameWithPhysics
             // Create new dynamic circles
             if ((mouseState.LeftButton == ButtonState.Pressed) && (_oldMouseState.LeftButton == ButtonState.Released))
             {
-                DynamicCircle ball = new DynamicCircle(world: _world, position: worldMousePosition, radius: 0.5f, restitution: 0.5f, friction: 0.5f, density: 1f);
+                CircleEntity ball = new CircleEntity(world: _world, position: worldMousePosition, radius: 0.5f, bodyType: BodyType.Dynamic, restitution: 0.5f, friction: 0.5f, density: 1f);
                 ball.Load(Content, _relPathSpriteBall);
                 ball.Body.FixtureList[0].Tag = "ball";
                 ball.Body.OnCollision += BodyBall_OnCollision;

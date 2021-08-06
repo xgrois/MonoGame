@@ -5,10 +5,18 @@ using Microsoft.Xna.Framework.Content;
 
 namespace MonoGameWithPhysics
 {
-    public class DynamicCircle : PhysicShape
+    public class CircleEntity : PhysicShape
     {
 
-        public BodyType BodyType { get; } = BodyType.Dynamic;
+        public BodyType BodyType
+        {
+            get
+            {
+                if (Body != null) return Body.BodyType;
+                else throw new System.Exception("BodyType cannot be returned since no Body is yet attached.");
+            }
+            private set { }
+        }
 
         public Vector2 Scale
         {
@@ -38,10 +46,11 @@ namespace MonoGameWithPhysics
             }
         }
 
-        public DynamicCircle(World world, Vector2 position, float radius, float restitution = 0.8f, float friction = 0.5f, float density = 1f)
+        public CircleEntity(World world, Vector2 position, float radius, BodyType bodyType, float restitution = 0.8f, float friction = 0.5f, float density = 1f)
         {
-
-            Body = world.CreateBody(position: position, rotation: 0f, bodyType: BodyType);
+            
+            Body = world.CreateBody(position: position, rotation: 0f, bodyType: bodyType);
+            BodyType = bodyType;
 
             var pfixture = Body.CreateCircle(radius, density);
 

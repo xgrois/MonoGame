@@ -5,10 +5,10 @@ using Microsoft.Xna.Framework.Content;
 
 namespace MonoGameWithPhysics
 {
-    public class FixedPlatform : PhysicShape
+    public class RectangleEntity : PhysicShape
     {
 
-        public BodyType BodyType { get; } = BodyType.Static;
+
 
         public Vector2 Scale
         {
@@ -16,7 +16,7 @@ namespace MonoGameWithPhysics
             {
                 if (Texture2D == null)
                 {
-                    throw new System.Exception("Texture2D has not been assigned yet so we cannot return its origin");
+                    throw new System.Exception("Texture2D has not been assigned yet so we cannot return its origin.");
                 }
                 return BodySize / TextureSize;
             }
@@ -24,17 +24,28 @@ namespace MonoGameWithPhysics
 
         public Vector2 BodySize { get; set; }
 
-        public FixedPlatform(World world, Vector2 position, Vector2 bodySize, float density = 1f)
+        public BodyType BodyType
         {
+            get
+            {
+                if (Body != null) return Body.BodyType;
+                else throw new System.Exception("BodyType cannot be returned since no Body is yet attached.");
+            }
+            private set { }
+        }
 
-            BodySize = bodySize;
-            Body = world.CreateBody(position: position, rotation: 0f, bodyType: BodyType);
-
-            var pfixture = Body.CreateRectangle(width: bodySize.X, height: bodySize.Y, density: 1f, offset: Vector2.Zero);
+        public RectangleEntity(World world, Vector2 position, Vector2 bodySize, BodyType bodyType, float restitution = 0.8f, float friction = 0.5f, float density = 1f)
+        {
             
+            BodySize = bodySize;
+            Body = world.CreateBody(position: position, rotation: 0f, bodyType: bodyType);
+            BodyType = bodyType;
+
+            Fixture fixture = Body.CreateRectangle(width: bodySize.X, height: bodySize.Y, density: 1f, offset: Vector2.Zero);
+
             // Give it some bounce and friction
-            pfixture.Restitution = 0.3f;
-            pfixture.Friction = 0.5f;
+            fixture.Restitution = restitution;
+            fixture.Friction = friction;
         }
 
         public  override void Load(ContentManager content, string spriteLocation)
